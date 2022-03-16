@@ -542,6 +542,7 @@ int main(int argc, char *argv[]) {
             terminals[strlen(terminals) - 1] = '\0';
         }
     } else if (argc == 37) {
+        load_structure(structure);
         char buffer[1024] = {0};
         strcat(buffer, "1000 0 -1000 0 ");
         for (int i = 1; i < 37; i++) {
