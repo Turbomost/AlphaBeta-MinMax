@@ -10,7 +10,7 @@ make
 ### Guide
 
 ```bash
-./run [terminals left->right top->bottom]{40}
+./run [terminals left to right, top to bottom]{40}
 ```
 Run with 2021/2022 structure and custom terminals. Order is from top to bottom, then from left to right - your input should start with **./run inf 0 -inf 0**.
 
@@ -24,8 +24,8 @@ Print help or help for custom sturctures.
 ```bash
 ./run custom [structure] end [terminals] end
 ```
-Custom structure is number of branches from top to bottom, then from left to right.
-Custom terminals order is from top to bottom, then from left to right.
+Custom structure is number of branches from left to right, top to bottom.
+Custom terminals order is from left to right, top to bottom.
 
 ### Example
 ![alt text](https://i.postimg.cc/NfjD8xzS/izu.png)
