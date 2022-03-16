@@ -18,7 +18,6 @@
 #define NUM_BUFFER_SIZE 256
 #define TERM_COUNT_2022 40
 
-
 // Global vars
 int MAX_Y = 5;
 int alpha[100][100][5];
@@ -460,18 +459,6 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        // Can't find "end" two times
-        int count;
-        for (int i = 2; i < argc; i++) {
-            if (!strcmp(argv[i], "end"))
-                count++;
-        }
-        if (count != 2) {
-            print_help();
-            fprintf(stderr, "Can't find 'end' two times!\n\n");
-            exit(EXIT_FAILURE);
-        }
-
         if (!strcmp(argv[2], "help")) {
             printf(" > ./run custom [number of branches from up to down, left to right (-1 if terminal)] end\n");
 
@@ -485,6 +472,17 @@ int main(int argc, char *argv[]) {
             printf("\n");
             exit(EXIT_SUCCESS);
         } else {
+            // Can't find "end" two times
+            int count;
+            for (int i = 2; i < argc; i++) {
+                if (!strcmp(argv[i], "end"))
+                    count++;
+            }
+            if (count != 2) {
+                print_help();
+                fprintf(stderr, "Can't find 'end' two times!\n\n");
+                exit(EXIT_FAILURE);
+            }
             int i;
             strcpy(structure, "");
             char buffer[BUFFER_SIZE] = {0};
@@ -569,18 +567,21 @@ int main(int argc, char *argv[]) {
                 }
             }
             char buffer_num[NUM_BUFFER_SIZE] = {0};
-            
+
             snprintf(buffer_num, NUM_BUFFER_SIZE, "%li ", num);
 
             strncat(buffer, buffer_num, BUFFER_SIZE - strlen(buffer));
         }
-        buffer[strlen(buffer)-1] = 0;
+        buffer[strlen(buffer) - 1] = 0;
         strcpy(terminals, buffer);
     }
-
+    else if (!strcmp(argv[1], "help")){
+        print_help();
+        exit(EXIT_SUCCESS);
+    }
     else {
         print_help();
-        fprintf(stderr, "No arguments!\n");
+        fprintf(stderr, "Not enough arguments!\n");
         exit(EXIT_FAILURE);
     }
 
