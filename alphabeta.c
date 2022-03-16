@@ -14,6 +14,10 @@
 #define INF 1000
 #define Space_Size 2
 #define Inf_size 3
+#define BUFFER_SIZE 1024
+#define NUM_BUFFER_SIZE 256
+#define TERM_COUNT_2022 40
+
 
 // Global vars
 int MAX_Y = 5;
@@ -425,10 +429,10 @@ void get_string_lenghts(int lengths[2][10][100]) {
 void print_help() {
     printf("\n");
     printf("Running:\n");
-    printf(" ./run [bottom row terminals]{36}      -> Run custom input \n");
-    printf(" ./run custom [struct] end [terms] end -> Run custom input with custom structure \n");
-    printf(" ./run custom help                     -> More info for custom structures \n");
-    printf(" ./run help                            -> Print this help \n\n");
+    printf(" ./run [terminals left->right top->bottom]{40}  -> Run with 2021/2022 structure and custom terminals \n");
+    printf(" ./run custom [struct] end [terms] end          -> Run custom input with custom structure \n");
+    printf(" ./run custom help                              -> More info for custom structures \n");
+    printf(" ./run help                                     -> Print this help \n\n");
     printf("Guide:\n");
     printf(" | .. | -> node skipped (a >= b)\n");
     printf(" | 12 | -> terminal node\n\n");
@@ -437,7 +441,7 @@ void print_help() {
 int main(int argc, char *argv[]) {
     // Init vars
     initialize();
-    char terminals[1024];
+    char terminals[BUFFER_SIZE];
     char structure[] = "4 2 1 2 1 2 2 2 2 2 1 2 1 2 2 2 2 -1 2 1 2 2 -1 3 -1 1 3 3 2 3 3 1 4 3 3 -1 2 2 1 2";
 
     // Not enough arguments
@@ -483,7 +487,7 @@ int main(int argc, char *argv[]) {
         } else {
             int i;
             strcpy(structure, "");
-            char buffer[1024] = {0};
+            char buffer[BUFFER_SIZE] = {0};
             for (i = 2;; i++) {
                 long num;
 
@@ -499,9 +503,9 @@ int main(int argc, char *argv[]) {
                     exit(EXIT_FAILURE);
                 }
 
-                char buffer_num[256] = {0};
-                snprintf(buffer_num, 256, "%li ", num);
-                strncat(buffer, buffer_num, 1024 - strlen(buffer));
+                char buffer_num[NUM_BUFFER_SIZE] = {0};
+                snprintf(buffer_num, NUM_BUFFER_SIZE, "%li ", num);
+                strncat(buffer, buffer_num, BUFFER_SIZE - strlen(buffer));
             }
             strcpy(structure, buffer);
             structure[strlen(structure) - 1] = '\0';
@@ -513,7 +517,7 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "Unexpected number of terms : %i\nExpected: %i\n\n", argc - i - 2, term_count + level_branches[MAX_Y] - 1);
                 exit(EXIT_FAILURE);
             }
-            char new_buffer[1024] = {0};
+            char new_buffer[BUFFER_SIZE] = {0};
             while (strcmp(argv[++i], "end")) {
                 long num;
 
@@ -534,18 +538,17 @@ int main(int argc, char *argv[]) {
                         exit(EXIT_FAILURE);
                     }
                 }
-                char buffer_num[256] = {0};
-                snprintf(buffer_num, 256, "%li ", num);
-                strncat(new_buffer, buffer_num, 1024 - strlen(new_buffer));
+                char buffer_num[NUM_BUFFER_SIZE] = {0};
+                snprintf(buffer_num, NUM_BUFFER_SIZE, "%li ", num);
+                strncat(new_buffer, buffer_num, BUFFER_SIZE - strlen(new_buffer));
             }
             strcpy(terminals, new_buffer);
             terminals[strlen(terminals) - 1] = '\0';
         }
-    } else if (argc == 37) {
+    } else if (argc == TERM_COUNT_2022 + 1) {
         load_structure(structure);
-        char buffer[1024] = {0};
-        strcat(buffer, "1000 0 -1000 0 ");
-        for (int i = 1; i < 37; i++) {
+        char buffer[BUFFER_SIZE] = {0};
+        for (int i = 1; i < TERM_COUNT_2022 + 1; i++) {
             long num;
 
             if (strcmp(argv[i], "inf") == 0) {
@@ -565,14 +568,13 @@ int main(int argc, char *argv[]) {
                     exit(EXIT_FAILURE);
                 }
             }
-            char buffer_num[256] = {0};
-            if (i != 36) {
-                snprintf(buffer_num, 256, "%li ", num);
-            } else {
-                snprintf(buffer_num, 256, "%li", num);
-            }
-            strncat(buffer, buffer_num, 1024 - strlen(buffer));
+            char buffer_num[NUM_BUFFER_SIZE] = {0};
+            
+            snprintf(buffer_num, NUM_BUFFER_SIZE, "%li ", num);
+
+            strncat(buffer, buffer_num, BUFFER_SIZE - strlen(buffer));
         }
+        buffer[strlen(buffer)-1] = 0;
         strcpy(terminals, buffer);
     }
 
