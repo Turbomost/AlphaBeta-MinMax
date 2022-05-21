@@ -2,7 +2,7 @@
  * @Author: Turbomošt
  * @Date: 2022-03-10 15:31:45
  * @Last Modified by: Turbomošt
- * @Last Modified time: 2022-05-21 23:56:59
+ * @Last Modified time: 2022-05-22 00:02:30
  */
 
 #include <stdio.h>
@@ -461,12 +461,12 @@ int main(int argc, char *argv[]) {
         }
 
         if (!strcmp(argv[2], "help")) {
-            printf(" > ./run custom [number of branches from up to down, left to right (-1 if terminal)] end\n");
+            printf(" > ./run custom [number of branches from left to right, up to down (-1 if terminal)] end\n");
 
             printf(
                 "\n             _2_\n             / \\\n          _2_   0 (-1)\n          / \\\n     1 (-1)  _1_\n              |\n            \n\n    -> ./run custom 2 2 -1 -1 1 end ... \n");
 
-            printf("\n > ./run custom [...] end [Terminals from up to down, left to right] end\n");
+            printf("\n > ./run custom [...] end [Terminals from left to right, up to down] end\n");
             printf(
                 "\n             ___\n             / \\\n          ___   0\n          / \\\n         1   ___\n              |\n             inf\n\n    -> ./run custom 2 2 -1 -1 1 end 0 1 inf end\n\n");
 
