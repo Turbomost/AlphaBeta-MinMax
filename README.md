@@ -1,6 +1,6 @@
 # AlphaBeta-MinMax
 ## Turbomošt
-### Running
+### Compiling
 
 
 ```bash
@@ -12,7 +12,7 @@ make
 ```bash
 ./run [terminals left to right, top to bottom]{40}
 ```
-Run with 2021/2022 structure and custom terminals. Order is from top to bottom, then from left to right - your input should start with **./run inf 0 -inf 0**.
+Run with 2021/2022 structure and custom terminals. Order is from left to right, top to bottom - your input should start with **./run inf 0 -inf 0**.
 
 ```bash
 ./run help
