@@ -68,5 +68,3 @@ And for the last part you need to input terminals:
 ```bash
 ./run custom 4 3 -1 2 2 3 -1 -1 2 -1 3 -1 -1 2 2 3 -1 2 -1 2 2 3 -1 4 -1 2 3 -1 3 4 -1 end -inf inf -inf inf inf -inf -inf inf inf -inf inf inf 1 8 8 3 5 1 -5 4 -2 -5 5 4 -3 6 7 3 9 7 5 6 1 end
 ```
-
-Output:
