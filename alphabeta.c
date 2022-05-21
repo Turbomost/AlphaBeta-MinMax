@@ -20,14 +20,14 @@
 
 // Global vars
 int MAX_Y = 5;
-int alpha[100][100][5];
-int beta[100][100][5];
-int branches[5][100];
+int alpha[100][100][10];
+int beta[100][100][10];
+int branches[10][100];
 int numbers[100];
-int numbers2[6][100];
-int level_branches[5];
-int breakpoint[6][100];
-int minmax[6][100][20];
+int numbers2[10][100];
+int level_branches[10];
+int breakpoint[10][100];
+int minmax[10][100][20];
 int term_count = 0;
 
 /**
@@ -49,11 +49,12 @@ void load_structure(char *structure) {
         branches[y][x] = number;
         if (number != -1) {
             level_branches[y + 1] += abs(number);
+        } else {
+            term_count++;
         }
         if (++x >= level_branches[y]) {
             y++;
             x = 0;
-            term_count++;
         }
         token = strtok(NULL, " ");
     }
@@ -89,7 +90,7 @@ void initialize() {
     for (int i = 0; i <= MAX_Y; i++) {
         for (int j = 0; j < 100; j++) {
             branches[i][j] = -1;
-            for (int c = 0; c < 5; c++) {
+            for (int c = 0; c < MAX_Y; c++) {
                 alpha[i][j][c] = UND_A;
                 beta[i][j][c] = UND_B;
             }
@@ -124,7 +125,7 @@ void print_alphabeta(int y, int lengths[2][10][100]) {
             printf("| ");
             if (alpha[y][x][0] != UND_A) {
                 printf("a: ");
-                for (int c = 0; c < 5; c++) {
+                for (int c = 0; c < MAX_Y; c++) {
                     if (alpha[y][x][c] != UND_A) {
                         if (alpha[y][x][c + 1] != UND_A) {
                             if (alpha[y][x][c] == INF)
@@ -172,7 +173,7 @@ void print_alphabeta(int y, int lengths[2][10][100]) {
         if (branches[y][x] != -1) {
             if (beta[y][x][0] != UND_B) {
                 printf("b: ");
-                for (int c = 0; c < 5; c++) {
+                for (int c = 0; c < MAX_Y; c++) {
                     if (beta[y][x][c] != UND_B) {
                         if (beta[y][x][c + 1] != UND_B) {
                             if (beta[y][x][c] == INF)
@@ -388,7 +389,7 @@ void get_string_lenghts(int lengths[2][10][100]) {
             if (branches[y][x] != -1) {
                 lengths[0][y][x] = 0;
                 lengths[1][y][x] = 0;
-                for (int c = 0; c < 5; c++) {
+                for (int c = 0; c < MAX_Y; c++) {
                     if (alpha[y][x][c] != UND_A) {
                         char snum[5];
                         sprintf(snum, "%d", alpha[y][x][c]);
@@ -402,7 +403,7 @@ void get_string_lenghts(int lengths[2][10][100]) {
                     }
                 }
                 ++lengths[0][y][x];
-                for (int c = 0; c < 5; c++) {
+                for (int c = 0; c < MAX_Y; c++) {
                     if (beta[y][x][c] != UND_B) {
                         char snum[5];
                         sprintf(snum, "%d", beta[y][x][c]);
@@ -510,9 +511,9 @@ int main(int argc, char *argv[]) {
 
             load_structure(structure);
             // Wrong number of terms
-            if ((argc - i - 2) != (term_count + level_branches[MAX_Y] - 1)) {
+            if ((argc - i - 2) != (term_count + level_branches[MAX_Y])) {
                 print_help();
-                fprintf(stderr, "Unexpected number of terms : %i\nExpected: %i\n\n", argc - i - 2, term_count + level_branches[MAX_Y] - 1);
+                fprintf(stderr, "Unexpected number of terms : %i\nExpected: %i\n\n", argc - i - 2, term_count + level_branches[MAX_Y]);
                 exit(EXIT_FAILURE);
             }
             char new_buffer[BUFFER_SIZE] = {0};
@@ -574,12 +575,10 @@ int main(int argc, char *argv[]) {
         }
         buffer[strlen(buffer) - 1] = 0;
         strcpy(terminals, buffer);
-    }
-    else if (!strcmp(argv[1], "help")){
+    } else if (!strcmp(argv[1], "help")) {
         print_help();
         exit(EXIT_SUCCESS);
-    }
-    else {
+    } else {
         print_help();
         fprintf(stderr, "Not enough arguments!\n");
         exit(EXIT_FAILURE);
