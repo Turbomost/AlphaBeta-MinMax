@@ -2,7 +2,7 @@
  * @Author: Turbomošt
  * @Date: 2022-03-10 15:31:45
  * @Last Modified by: Turbomošt
- * @Last Modified time: 2022-05-22 00:02:30
+ * @Last Modified time: 2022-10-18 02:11:03
  */
 
 #include <stdio.h>
@@ -17,6 +17,7 @@
 #define BUFFER_SIZE 1024
 #define NUM_BUFFER_SIZE 256
 #define TERM_COUNT_2022 40
+#define error(param) error_param((param), " ")
 
 // Global vars
 int MAX_Y = 5;
@@ -29,6 +30,55 @@ int level_branches[10];
 int breakpoint[10][100];
 int minmax[10][100][20];
 int term_count = 0;
+
+typedef enum {
+    ERR_ARGC,
+    ERR_CUSTOM_HELP,
+    ERR_END,
+    ERR_NOARG,
+    ERR_INV,
+    ERR_UNEXC
+} error_t;
+
+
+/**
+ * @brief Print help to stdout
+ *
+ */
+void print_help() {
+    printf("\n");
+    printf("Running:\n");
+    printf(" ./run [terminals left->right top->bottom]{40}  -> Run with 2021/2022 structure and custom terminals \n");
+    printf(" ./run custom [struct] end [terms] end          -> Run custom input with custom structure \n");
+    printf(" ./run custom help                              -> More info for custom structures \n");
+    printf(" ./run help                                     -> Print this help \n\n");
+    printf("Guide:\n");
+    printf(" | .. | -> node skipped (a >= b)\n");
+    printf(" | 12 | -> terminal node\n\n");
+}
+
+
+void error_param(error_t exit_error, char *param) {
+    print_help();
+    switch (exit_error) {
+        case ERR_ARGC:
+            fprintf(stderr, "Not enough arguments!\n\n");
+            break;
+        case ERR_END:
+            fprintf(stderr, "Can't find 'end' two times!\n\n");
+            break;
+        case ERR_NOARG:
+            fprintf(stderr, "Not enough arguments!\n\n");
+            break;
+        case ERR_INV:
+            fprintf(stderr, "Invalid parameter '%s'!\n\n", param);
+            break;
+        default:
+            fprintf(stderr, "Other error\n\n");
+            break;
+    }
+    exit(exit_error);
+}
 
 /**
  * @brief Set up game structure
@@ -62,6 +112,11 @@ void load_structure(char *structure) {
     MAX_Y = y;
 }
 
+/**
+ * @brief Load terminals to structure from string
+ *
+ * @param terminals string of terminals
+ */
 void load_terminals(char *terminals) {
     // Load terminals
     int x = 0;
@@ -422,20 +477,26 @@ void get_string_lenghts(int lengths[2][10][100]) {
     }
 }
 
-/**
- * @brief Print help to stdout
- *
- */
-void print_help() {
-    printf("\n");
-    printf("Running:\n");
-    printf(" ./run [terminals left->right top->bottom]{40}  -> Run with 2021/2022 structure and custom terminals \n");
-    printf(" ./run custom [struct] end [terms] end          -> Run custom input with custom structure \n");
-    printf(" ./run custom help                              -> More info for custom structures \n");
-    printf(" ./run help                                     -> Print this help \n\n");
-    printf("Guide:\n");
-    printf(" | .. | -> node skipped (a >= b)\n");
-    printf(" | 12 | -> terminal node\n\n");
+void get_number(char *buffer, char *arg) {
+    long num;
+    if (strcmp(arg, "inf") == 0) {
+        num = 1000;
+    }
+
+    else if (strcmp(arg, "-inf") == 0) {
+        num = -1000;
+    }
+
+    else {
+        char *check = NULL;
+        num = strtol(arg, &check, 10);
+        if (*check != 0) {
+            error_param(ERR_INV, arg);
+        }
+    }
+    char buffer_num[NUM_BUFFER_SIZE] = {0};
+    snprintf(buffer_num, NUM_BUFFER_SIZE, "%li ", num);
+    strncat(buffer, buffer_num, BUFFER_SIZE - strlen(buffer));
 }
 
 int main(int argc, char *argv[]) {
@@ -446,31 +507,18 @@ int main(int argc, char *argv[]) {
 
     // Not enough arguments
     if (argc < 2) {
-        print_help();
-        fprintf(stderr, "Not enough arguments!\n\n");
-        exit(EXIT_FAILURE);
+        error(ERR_ARGC);
     }
 
     // Custom input
     if (!strcmp(argv[1], "custom")) {
         // No arguments
         if (argc < 3) {
-            print_help();
-            fprintf(stderr, "No arguments after 'custom'!\n\n");
-            exit(EXIT_FAILURE);
+            error(ERR_NOARG);
         }
 
         if (!strcmp(argv[2], "help")) {
-            printf(" > ./run custom [number of branches from left to right, up to down (-1 if terminal)] end\n");
-
-            printf(
-                "\n             _2_\n             / \\\n          _2_   0 (-1)\n          / \\\n     1 (-1)  _1_\n              |\n            \n\n    -> ./run custom 2 2 -1 -1 1 end ... \n");
-
-            printf("\n > ./run custom [...] end [Terminals from left to right, up to down] end\n");
-            printf(
-                "\n             ___\n             / \\\n          ___   0\n          / \\\n         1   ___\n              |\n             inf\n\n    -> ./run custom 2 2 -1 -1 1 end 0 1 inf end\n\n");
-
-            printf("\n");
+            printf(" > ./run custom [number of branches from left to right, up to down (-1 if terminal)] end\n\n             _2_\n             / \\\n          _2_   0 (-1)\n          / \\\n     1 (-1)  _1_\n              |\n            \n\n    -> ./run custom 2 2 -1 -1 1 end ... \n\n > ./run custom [...] end [Terminals from left to right, up to down] end\n\n             ___\n             / \\\n          ___   0\n          / \\\n         1   ___\n              |\n             inf\n\n    -> ./run custom 2 2 -1 -1 1 end 0 1 inf end\n\n\n");
             exit(EXIT_SUCCESS);
         } else {
             // Can't find "end" two times
@@ -480,9 +528,7 @@ int main(int argc, char *argv[]) {
                     count++;
             }
             if (count != 2) {
-                print_help();
-                fprintf(stderr, "Can't find 'end' two times!\n\n");
-                exit(EXIT_FAILURE);
+                error(ERR_END);
             }
             int i;
             strcpy(structure, "");
@@ -497,9 +543,7 @@ int main(int argc, char *argv[]) {
                 char *check = NULL;
                 num = strtol(argv[i], &check, 10);
                 if (*check != 0) {
-                    print_help();
-                    fprintf(stderr, "Invalid parameter '%s'!\n\n", argv[i]);
-                    exit(EXIT_FAILURE);
+                    error_param(ERR_INV, argv[i]);
                 }
 
                 char buffer_num[NUM_BUFFER_SIZE] = {0};
@@ -518,28 +562,7 @@ int main(int argc, char *argv[]) {
             }
             char new_buffer[BUFFER_SIZE] = {0};
             while (strcmp(argv[++i], "end")) {
-                long num;
-
-                if (strcmp(argv[i], "inf") == 0) {
-                    num = 1000;
-                }
-
-                else if (strcmp(argv[i], "-inf") == 0) {
-                    num = -1000;
-                }
-
-                else {
-                    char *check = NULL;
-                    num = strtol(argv[i], &check, 10);
-                    if (*check != 0) {
-                        print_help();
-                        fprintf(stderr, "Invalid parameter '%s'!\n", argv[i]);
-                        exit(EXIT_FAILURE);
-                    }
-                }
-                char buffer_num[NUM_BUFFER_SIZE] = {0};
-                snprintf(buffer_num, NUM_BUFFER_SIZE, "%li ", num);
-                strncat(new_buffer, buffer_num, BUFFER_SIZE - strlen(new_buffer));
+                get_number(new_buffer, argv[i]);
             }
             strcpy(terminals, new_buffer);
             terminals[strlen(terminals) - 1] = '\0';
@@ -548,30 +571,7 @@ int main(int argc, char *argv[]) {
         load_structure(structure);
         char buffer[BUFFER_SIZE] = {0};
         for (int i = 1; i < TERM_COUNT_2022 + 1; i++) {
-            long num;
-
-            if (strcmp(argv[i], "inf") == 0) {
-                num = 1000;
-            }
-
-            else if (strcmp(argv[i], "-inf") == 0) {
-                num = -1000;
-            }
-
-            else {
-                char *check = NULL;
-                num = strtol(argv[i], &check, 10);
-                if (*check != 0) {
-                    print_help();
-                    fprintf(stderr, "Invalid parameter '%s'!\n", argv[i]);
-                    exit(EXIT_FAILURE);
-                }
-            }
-            char buffer_num[NUM_BUFFER_SIZE] = {0};
-
-            snprintf(buffer_num, NUM_BUFFER_SIZE, "%li ", num);
-
-            strncat(buffer, buffer_num, BUFFER_SIZE - strlen(buffer));
+            get_number(buffer, argv[i]);
         }
         buffer[strlen(buffer) - 1] = 0;
         strcpy(terminals, buffer);
@@ -579,9 +579,7 @@ int main(int argc, char *argv[]) {
         print_help();
         exit(EXIT_SUCCESS);
     } else {
-        print_help();
-        fprintf(stderr, "Not enough arguments!\n");
-        exit(EXIT_FAILURE);
+        error(ERR_NOARG);
     }
 
     // Load structure
