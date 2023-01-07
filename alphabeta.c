@@ -2,13 +2,16 @@
  * @Author: Turbomošt
  * @Date: 2022-03-10 15:31:45
  * @Last Modified by: Turbomošt
- * @Last Modified time: 2022-10-18 02:11:03
+ * @Last Modified time: 2023-01-01 18:42:42
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#define red "\x1B[31m"
+#define green "\x1B[32m"
+#define reset "\x1B[0m"
 #define UND_A -6969
 #define UND_B 6969
 #define INF 1000
@@ -53,8 +56,11 @@ void print_help() {
     printf(" ./run custom help                              -> More info for custom structures \n");
     printf(" ./run help                                     -> Print this help \n\n");
     printf("Guide:\n");
-    printf(" | .. | -> node skipped (a >= b)\n");
+    printf(" | %s..%s | -> node skipped (a >= b)\n", red, reset);
     printf(" | 12 | -> terminal node\n\n");
+    printf("Tips:\n");
+    printf(" use | less -RS to scroll through output (exit with q)\n");
+    printf(" use > output.txt to save output to file\n");
 }
 
 
@@ -202,14 +208,14 @@ void print_alphabeta(int y, int lengths[2][10][100]) {
                     }
                 }
             } else {
-                printf(".. ");
+                printf("%s..%s ", red, reset);
             }
         }
 
         // Print terminals
         else if (level_branches[y] > x) {
             if (breakpoint[y][x] == 0)
-                printf("| .. ");
+                printf("| %s..%s ", red, reset);
             else {
                 printf("| ");
                 if (numbers2[y][x] == INF)
@@ -250,7 +256,7 @@ void print_alphabeta(int y, int lengths[2][10][100]) {
                     }
                 }
             } else {
-                printf(".. ");
+                printf("%s..%s ", red, reset);
             }
 
             printf("| ");
@@ -259,7 +265,7 @@ void print_alphabeta(int y, int lengths[2][10][100]) {
         // Print spaces
         else if (level_branches[y] > x) {
             if (breakpoint[y][x] == 0)
-                printf(".. | ");
+                printf("%s..%s | ", red, reset);
             else {
                 if (numbers2[y][x] == INF)
                     fill_spaces(4);
@@ -306,7 +312,7 @@ void print_minmax(int y) {
                     }
                 }
             } else {
-                printf(".. ");
+                printf("%s..%s ", red, reset);
             }
         }
 
@@ -592,14 +598,14 @@ int main(int argc, char *argv[]) {
     minmaxfunc(0, 0, 1);
 
     // Print output
-    printf("\nAlphaBeta:\n\n");
+    printf("\n%sAlphaBeta:%s\n\n", green, reset);
     int lengths[2][10][100];
     get_string_lenghts(lengths);
     for (int y = 0; y <= MAX_Y; y++) {
         print_alphabeta(y, lengths);
         printf("\n\n");
     }
-    printf("\n\nMinMax:\n\n");
+    printf("\n\n%sMinMax:%s\n\n", green, reset);
     for (int y = 0; y <= MAX_Y; y++) {
         print_minmax(y);
         printf("|\n\n");
