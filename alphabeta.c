@@ -384,7 +384,7 @@ int alphabeta(int y, int x, int A, int B, int maximazing) {
             }
             if (A >= B) {
                 for (; i < branches[y][x] - 1; i++)
-                    breakpoint[y + 1][branch_skip + i + 1] = 1;
+                    breakpoint[y + 1][branch_skip + i + 1] = 0;
                 break;
             }
         }
